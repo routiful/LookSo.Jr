@@ -92,7 +92,7 @@ void LuxoJrController::closeDynamixel(void)
   portHandler_->closePort();
 }
 
-bool LuxoJrController::readPosition(int8_t id, int16_t *position)
+bool LuxoJrController::readPosition(int8_t id, int *position)
 {
   uint8_t dynamixel_error = 0;
   int dynamixel_comm_result = COMM_RX_FAIL;
@@ -119,7 +119,7 @@ bool LuxoJrController::readPosition(int8_t id, int16_t *position)
   }
 }
 
-bool LuxoJrController::positionControl(int64_t goal_position[4])
+bool LuxoJrController::positionControl(int goal_position[4])
 {
   bool dxl_addparam_result_;
   int8_t dxl_comm_result_;

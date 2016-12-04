@@ -21,6 +21,7 @@
 
 #include <IMU.h>
 #include <RC100.h>
+#include <math.h>
 
 #include "wheel_driver.h"
 #include "luxo_jr_controller.h"
@@ -42,5 +43,8 @@
 #define VELOCITY_STEP         0.02
 
 #define LIMIT_XM_MAX_VELOCITY 480
+
+#define min(a,b) ((a)<(b)?(a):(b))
+#define max(a,b) ((a)<(b)?(b):(a))
 
 #endif // LUXO_CORE_CONFIG_H_

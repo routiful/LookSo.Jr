@@ -40,6 +40,11 @@
 #define TORQUE_ENABLE                   1       // Value for enabling the torque
 #define TORQUE_DISABLE                  0       // Value for disabling the torque
 
+#define DEGREE2RADIAN                   (PI / 180.0)
+#define RADIAN2DEGREE                   (180.0 / PI)
+
+#define JOINT_STEP                      0.005   //radian
+
 class LuxoJrController
 {
  public:
@@ -48,8 +53,8 @@ class LuxoJrController
   bool init(void);
   void closeDynamixel(void);
   bool setTorque(uint8_t id, bool onoff);
-  bool readPosition(int8_t id, int16_t *position);
-  bool positionControl(int64_t goal_position[4]);
+  bool readPosition(int8_t id, int *position);
+  bool positionControl(int goal_position[4]);
 
  private:
   int8_t baudrate_;
