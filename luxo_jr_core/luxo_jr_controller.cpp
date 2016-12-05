@@ -119,7 +119,7 @@ bool LuxoJrController::readPosition(int8_t id, int *position)
   }
 }
 
-bool LuxoJrController::positionControl(float goal_position[4])
+bool LuxoJrController::positionControl(int goal_position[4])
 {
   bool dxl_addparam_result_;
   int8_t dxl_comm_result_;

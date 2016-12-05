@@ -54,7 +54,7 @@ class LuxoJrController
   void closeDynamixel(void);
   bool setTorque(uint8_t id, bool onoff);
   bool readPosition(int8_t id, int *position);
-  bool positionControl(float goal_position[4]);
+  bool positionControl(int goal_position[4]);
 
  private:
   int8_t baudrate_;
