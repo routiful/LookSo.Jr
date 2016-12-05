@@ -36,7 +36,7 @@
 #define BAUDRATE                        1000000 // baurd rate of Dynamixel
 #define DEVICENAME                      ""      // no need setting on OpenCR
 
-#define MOTOR_NUM                       4
+#define MOTOR_NUM                       1
 #define TORQUE_ENABLE                   1       // Value for enabling the torque
 #define TORQUE_DISABLE                  0       // Value for disabling the torque
 
@@ -54,7 +54,7 @@ class LuxoJrController
   void closeDynamixel(void);
   bool setTorque(uint8_t id, bool onoff);
   bool readPosition(int8_t id, int *position);
-  bool positionControl(int goal_position[4]);
+  bool positionControl(float goal_position[4]);
 
  private:
   int8_t baudrate_;
