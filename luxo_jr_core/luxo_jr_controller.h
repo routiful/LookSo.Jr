@@ -23,13 +23,15 @@
 
 // Control table address (XM430-W350-T)
 #define ADDR_AX_TORQUE_ENABLE            24
-#define ADDR_XM_GOAL_POSITION            30
-#define ADDR_XM_PRESENT_POSITION         36
+#define ADDR_AX_GOAL_POSITION            30
+#define ADDR_AX_PRESENT_POSITION         36
+#define ADDR_AX_LED                      25
 
 // Data Byte Length
-#define LEN_XM_TORQUE_ENABLE            1
-#define LEN_XM_GOAL_POSITION            2
-#define LEN_XM_PRESENT_POSITION         2
+#define LEN_AX_TORQUE_ENABLE            1
+#define LEN_AX_GOAL_POSITION            2
+#define LEN_AX_PRESENT_POSITION         2
+#define LEN_AX_LED                      1
 
 #define PROTOCOL_VERSION                1.0     // Dynamixel protocol version 2.0
 
@@ -46,7 +48,7 @@
 #define MAX_RADIAN                      2.6
 #define MIN_RADIAN                      -2.6
 
-#define REPEAT                          60
+#define REPEAT                          0
 
 class LuxoJrController
 {
@@ -56,9 +58,10 @@ class LuxoJrController
   bool init(void);
   void closeDynamixel(void);
   bool setTorque(uint8_t id, bool onoff);
+  bool setLED(bool onoff);
   bool readPosition(int8_t id, int *position);
   bool positionControl(int goal_position[4]);
-  int convertRadian2Value(float radian);
+  int  convertRadian2Value(float radian);
   float convertValue2Radian(int value);
 
  private:

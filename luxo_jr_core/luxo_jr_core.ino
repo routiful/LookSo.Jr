@@ -9,7 +9,7 @@ WheelDriver LuxoJrWheel;
 LuxoJrController LuxoJrJoint;
 
 int luxo_jr_dxl_present_pos[4] = {0, 0, 0, 0};
-int luxo_jr_dxl_goal_pos[4] = {-REPEAT, -REPEAT, -REPEAT, -REPEAT}; //degree
+int luxo_jr_dxl_goal_pos[4] = {0, 0, 0, 0}; //degree
 
 float luxo_jr_dxl_present_rad[4] = {0.0, 0.0, 0.0, 0.0};
 float luxo_jr_dxl_goal_rad[4] = {0.0, 0.0, 0.0, 0.0};
@@ -17,19 +17,20 @@ float luxo_jr_dxl_goal_rad[4] = {0.0, 0.0, 0.0, 0.0};
 float joint_vel[4]= {0.0, 0.0, 0.0, 0.0};
 
 float luxo_jr_linear_x = 0.0, luxo_jr_angular_z = 0.0,  const_cmd_vel = 0.0;
-float mov_time = 1.5, ts = 0.008, luxo_jr_acc = 5.0, luxo_jr_max_vel = 5.0;
-int mov_cnt = 0;
-bool mov_stop = false;
+float mov_time = 1.5, ts = 0.008, luxo_jr_acc = 0.0, luxo_jr_max_vel = 0.0;
+int mov_cnt = 0, scene = 1;
 
 void setup()
 {
   Serial.begin(115200);
-  while(!Serial);
+  //while(!Serial);
 
   remote_controller.begin(1);
 
   LuxoJrWheel.init();
   LuxoJrJoint.init();
+
+  blink(1500, 3);
   timerInit();
 }
 
@@ -37,6 +38,7 @@ void loop()
 {
   receiveRemoteControl();
 
+#ifdef DEBUG
   // Serial.print("luxo_jr_linear_x : ");
   // Serial.print(luxo_jr_linear_x);
   // Serial.print(" luxo_jr_angular_z : ");
@@ -54,6 +56,7 @@ void loop()
   //   Serial.print(" ");
   //   Serial.println(luxo_jr_present_pos[3]);
   // }
+#endif
 }
 
 void timerInit()
@@ -67,26 +70,84 @@ void timerInit()
 
 void handler_control(void)
 {
-  //controlMotorSpeed();
+  controlMotorSpeed();
 
-  if (mov_cnt < (mov_time/ts))
+  trailor(scene);
+}
+
+void trailor(int scene)
+{
+  switch (scene)
   {
-    trapezoidalProfile(luxo_jr_acc, luxo_jr_max_vel, luxo_jr_dxl_goal_pos);
-    mov_cnt++;
+    case 1:
+      luxo_motion(1.5, 0, 90, 0, 0, 4.0, 4.0, 500, 0.0, 0.0);
+      break;
+    case 2:
+      luxo_motion(1.5, 0, 90, 0, -90, 3.0, 3.0, 800, 0.0, 0.0);
+      break;
+    case 3:
+      luxo_motion(2.0, 0, 90, 0, 90, 3.0, 3.0, 800, 0.0, 0.0);
+      break;
+    case 4:
+      luxo_motion(1.5, -45, 85, 50, 0, 3.0, 3.0, 800, 0.0, 0.0);
+      break;
+    case 5:
+      luxo_motion(1.5, 50, -50, -30, 0, 3.0, 3.0, 2000, 0.0, 0.0);
+      break;
+    case 6:
+      luxo_motion(1.5, 30, -50, -30, 0, 3.0, 3.0, 1500, 0.0, 0.0);
+      break;
+    case 7:
+      luxo_motion(1.5, 10, -50, -30, 0, 3.0, 3.0, 2000, -0.02, 0.0);
+      break;
+    case 8:
+      luxo_motion(3.0, -45, 85, 50, 0, 3.0, 3.0, 100, 0.0, 0.0);
+      break;
+    case 9:
+      luxo_motion(0.1, -45, 85, 50, 0, 3.0, 3.0, 100, 0.0, -1.0);
+      scene++;
+      break;
+    case 10:
+      luxo_motion(0.1, -45, 85, 50, 0, 3.0, 3.0, 100, 0.0, 1.0);
+      scene++;
+      break;
+    case 11:
+      luxo_motion(0.0, -45, 85, 50, 0, 3.0, 3.0, 100, 0.0, 0.0);
+      break;
+    default:
+      break;
   }
-  else
+}
+
+void luxo_motion(float mov, int a, int b, int c, int d, float acc, float vel, int ms, float linear, float angular)
+{
+  Serial.println(scene);
+  luxo_jr_dxl_goal_pos[0] = a;
+  luxo_jr_dxl_goal_pos[1] = b;
+  luxo_jr_dxl_goal_pos[2] = c;
+  luxo_jr_dxl_goal_pos[3] = d;
+
+  luxo_jr_linear_x  = linear;
+  luxo_jr_angular_z = angular;
+
+  if (mov > 0.0)
   {
-    if (luxo_jr_dxl_goal_pos[0] == -REPEAT)
+    if (mov_cnt < (mov_time/ts))
     {
-      luxo_jr_dxl_goal_pos[0] = REPEAT; luxo_jr_dxl_goal_pos[1] = REPEAT;
-      luxo_jr_dxl_goal_pos[2] = REPEAT; luxo_jr_dxl_goal_pos[3] = REPEAT;
+      trapezoidalProfile(acc, vel, luxo_jr_dxl_goal_pos);
+      mov_cnt++;
     }
     else
     {
-      luxo_jr_dxl_goal_pos[0] = -REPEAT; luxo_jr_dxl_goal_pos[1] = -REPEAT;
-      luxo_jr_dxl_goal_pos[2] = -REPEAT; luxo_jr_dxl_goal_pos[3] = -REPEAT;
+      delay(ms);
+      scene++;
+      mov_cnt = 0;
     }
-    mov_cnt = 0;
+  }
+  else
+  {
+    delay(ms);
+    scene++;
   }
 }
 
@@ -159,6 +220,9 @@ void controlMotorSpeed(void)
 
 void trapezoidalProfile(float acc, float max_vel, int goal_pos[4])
 {
+  // Serial.println(joint_vel[2]);
+  // Serial.print(" ");
+
   if (mov_cnt == 1)
   {
     for (int id = 1; id < MOTOR_NUM+1; id++)
@@ -179,11 +243,6 @@ void trapezoidalProfile(float acc, float max_vel, int goal_pos[4])
       luxo_jr_dxl_present_rad[id-1] = luxo_jr_dxl_present_rad[id-1] + joint_vel[id-1] * ts;
       luxo_jr_dxl_present_pos[id-1] = LuxoJrJoint.convertRadian2Value(luxo_jr_dxl_present_rad[id-1]);
 
-      Serial.println(joint_vel[id-1]);
-      Serial.print(" ");
-      //Serial.println(luxo_jr_dxl_present_pos[id-1]);
-      //Serial.print(" ");
-
       LuxoJrJoint.positionControl(luxo_jr_dxl_present_pos);
     }
     else if (luxo_jr_dxl_goal_rad[id-1] < luxo_jr_dxl_present_rad[id-1])
@@ -193,14 +252,19 @@ void trapezoidalProfile(float acc, float max_vel, int goal_pos[4])
       luxo_jr_dxl_present_rad[id-1] = luxo_jr_dxl_present_rad[id-1] + joint_vel[id-1] * ts;
       luxo_jr_dxl_present_pos[id-1] = LuxoJrJoint.convertRadian2Value(luxo_jr_dxl_present_rad[id-1]);
 
-      Serial.println(joint_vel[id-1]);
-      Serial.print(" ");
-      //Serial.println(luxo_jr_dxl_present_pos[id-1]);
-      //Serial.print(" ");
-
       LuxoJrJoint.positionControl(luxo_jr_dxl_present_pos);
     }
   }
 }
 
+void blink(int ms, int repeat)
+{
+  for (int num = 0; num < repeat; num++)
+  {
+    LuxoJrJoint.setLED(true);
+    delay(ms);
+    LuxoJrJoint.setLED(false);
+    delay(ms);
+  }
+}
 #endif // LUXO_CORE_INO
