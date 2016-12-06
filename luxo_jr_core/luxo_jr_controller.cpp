@@ -145,3 +145,61 @@ bool LuxoJrController::positionControl(int goal_position[4])
   groupSyncWrite_->clearParam();
   return true;
 }
+
+int LuxoJrController::convertRadian2Value(float radian)
+{
+  int value = 0;
+  if (radian > 0)
+  {
+    if (VALUE_OF_MAX_RADIAN_POSITION <= VALUE_OF_0_RADIAN_POSITION)
+      return VALUE_OF_MAX_RADIAN_POSITION;
+
+    value = (radian * (VALUE_OF_MAX_RADIAN_POSITION - VALUE_OF_0_RADIAN_POSITION) / MAX_RADIAN)
+                + VALUE_OF_0_RADIAN_POSITION;
+  }
+  else if (radian < 0)
+  {
+    if (VALUE_OF_MIN_RADIAN_POSITION >= VALUE_OF_0_RADIAN_POSITION)
+      return VALUE_OF_MIN_RADIAN_POSITION;
+
+    value = (radian * (VALUE_OF_MIN_RADIAN_POSITION - VALUE_OF_0_RADIAN_POSITION) / MIN_RADIAN)
+                + VALUE_OF_0_RADIAN_POSITION;
+  }
+  else
+    value = VALUE_OF_0_RADIAN_POSITION;
+
+  // if (value > VALUE_OF_MAX_RADIAN_POSITION)
+  //   return VALUE_OF_MAX_RADIAN_POSITION;
+  // else if (value < VALUE_OF_MIN_RADIAN_POSITION)
+  //   return VALUE_OF_MIN_RADIAN_POSITION;
+
+  return value;
+}
+
+float LuxoJrController::convertValue2Radian(int value)
+{
+  float radian = 0.0;
+  if (value > VALUE_OF_0_RADIAN_POSITION)
+  {
+    if (MAX_RADIAN <= 0)
+      return MAX_RADIAN;
+
+    radian = (float) (value - VALUE_OF_0_RADIAN_POSITION) * MAX_RADIAN
+               / (float) (VALUE_OF_MAX_RADIAN_POSITION - VALUE_OF_0_RADIAN_POSITION);
+  }
+  else if (value < VALUE_OF_0_RADIAN_POSITION)
+  {
+    if (MIN_RADIAN >= 0)
+      return MIN_RADIAN;
+
+    radian = (float) (value - VALUE_OF_0_RADIAN_POSITION) * MIN_RADIAN
+               / (float) (VALUE_OF_MIN_RADIAN_POSITION - VALUE_OF_0_RADIAN_POSITION);
+  }
+
+//  if (radian > max_radian_)
+//    return max_radian_;
+//  else if (radian < min_radian_)
+//    return min_radian_;
+
+  return radian;
+}
