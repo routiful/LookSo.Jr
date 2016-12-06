@@ -8,10 +8,18 @@ RC100 remote_controller;
 WheelDriver LuxoJrWheel;
 LuxoJrController LuxoJrJoint;
 
-int luxo_jr_present_dxl_pos[4] = {0, 0, 0, 0};
-int luxo_jr_goal_dxl_pos[4] = {0, 512, 512, 300};
+int luxo_jr_dxl_present_pos[4] = {0, 0, 0, 0};
+int luxo_jr_dxl_goal_pos[4] = {-REPEAT, -REPEAT, -REPEAT, -REPEAT}; //degree
+
+float luxo_jr_dxl_present_rad[4] = {0.0, 0.0, 0.0, 0.0};
+float luxo_jr_dxl_goal_rad[4] = {0.0, 0.0, 0.0, 0.0};
+
+float joint_vel[4]= {0.0, 0.0, 0.0, 0.0};
+
 float luxo_jr_linear_x = 0.0, luxo_jr_angular_z = 0.0,  const_cmd_vel = 0.0;
-float ts = 0.01, joint_vel = 0.0, pre_joint_vel = 0.0;
+float mov_time = 1.5, ts = 0.008, luxo_jr_acc = 5.0, luxo_jr_max_vel = 5.0;
+int mov_cnt = 0;
+bool mov_stop = false;
 
 void setup()
 {
@@ -60,8 +68,26 @@ void timerInit()
 void handler_control(void)
 {
   //controlMotorSpeed();
-  //LuxoJrJoint.positionControl(luxo_jr_goal_dxl_pos);
-  trapezoidalProfile();
+
+  if (mov_cnt < (mov_time/ts))
+  {
+    trapezoidalProfile(luxo_jr_acc, luxo_jr_max_vel, luxo_jr_dxl_goal_pos);
+    mov_cnt++;
+  }
+  else
+  {
+    if (luxo_jr_dxl_goal_pos[0] == -REPEAT)
+    {
+      luxo_jr_dxl_goal_pos[0] = REPEAT; luxo_jr_dxl_goal_pos[1] = REPEAT;
+      luxo_jr_dxl_goal_pos[2] = REPEAT; luxo_jr_dxl_goal_pos[3] = REPEAT;
+    }
+    else
+    {
+      luxo_jr_dxl_goal_pos[0] = -REPEAT; luxo_jr_dxl_goal_pos[1] = -REPEAT;
+      luxo_jr_dxl_goal_pos[2] = -REPEAT; luxo_jr_dxl_goal_pos[3] = -REPEAT;
+    }
+    mov_cnt = 0;
+  }
 }
 
 void receiveRemoteControl(void)
@@ -131,54 +157,48 @@ void controlMotorSpeed(void)
   LuxoJrWheel.speedControl((int64_t)lin_vel1, (int64_t)lin_vel2);
 }
 
-void trapezoidalProfile(void)
+void trapezoidalProfile(float acc, float max_vel, int goal_pos[4])
 {
-  float mov_time = 4.0;
-
-  float joint_acc = 12.0;
-  float joint_max_vel = 12.0;
-  float luxo_jr_dxl_present_rad[4] = {0.0, 0.0, 0.0, 0.0};
-  float luxo_jr_dxl_goal_rad[4] = {0.0, 0.0, 0.0, 0.0};
-
-  for (int id = 1; id < 2; id++)
+  if (mov_cnt == 1)
   {
-    LuxoJrJoint.readPosition(id, &luxo_jr_present_dxl_pos[id-1]);
+    for (int id = 1; id < MOTOR_NUM+1; id++)
+    {
+      LuxoJrJoint.readPosition(id, &luxo_jr_dxl_present_pos[id-1]);
+    }
   }
 
-  for (int num = 0; num < (mov_time/ts); num++)
+  for (int id = 1; id < MOTOR_NUM+1; id++)
   {
-    for (int id = 1; id < 2; id++)
+    luxo_jr_dxl_present_rad[id-1] = LuxoJrJoint.convertValue2Radian(luxo_jr_dxl_present_pos[id-1]);
+    luxo_jr_dxl_goal_rad[id-1] = goal_pos[id-1]*DEGREE2RADIAN;
+
+    if (luxo_jr_dxl_goal_rad[id-1] > luxo_jr_dxl_present_rad[id-1])
     {
-      luxo_jr_dxl_present_rad[id-1] = luxo_jr_present_dxl_pos[id-1] * 0.29 * (PI/180);
-      luxo_jr_dxl_goal_rad[id-1] = luxo_jr_goal_dxl_pos[id-1] * 0.29 * (PI/180);
+      joint_vel[id-1] = min(joint_vel[id-1] + (acc * ts), max_vel);
+      joint_vel[id-1] = min(joint_vel[id-1], sqrt(2*acc*abs(luxo_jr_dxl_goal_rad[id-1] - luxo_jr_dxl_present_rad[id-1])));
+      luxo_jr_dxl_present_rad[id-1] = luxo_jr_dxl_present_rad[id-1] + joint_vel[id-1] * ts;
+      luxo_jr_dxl_present_pos[id-1] = LuxoJrJoint.convertRadian2Value(luxo_jr_dxl_present_rad[id-1]);
 
-      Serial.print(luxo_jr_goal_dxl_pos[id-1]);
+      Serial.println(joint_vel[id-1]);
       Serial.print(" ");
-      Serial.print(luxo_jr_present_dxl_pos[id-1]);
-      Serial.print(" ");
-      Serial.print(joint_vel);
-      Serial.print(" ");
+      //Serial.println(luxo_jr_dxl_present_pos[id-1]);
+      //Serial.print(" ");
 
-      if (luxo_jr_dxl_goal_rad[id-1] > luxo_jr_dxl_present_rad[id-1])
-      {
-        joint_vel = min(joint_vel + (joint_acc * ts), joint_max_vel);
-        joint_vel = min(joint_vel, sqrt(2*joint_acc*abs(luxo_jr_dxl_goal_rad[id-1] - luxo_jr_dxl_present_rad[id-1])));
-        luxo_jr_dxl_present_rad[id-1] = luxo_jr_dxl_present_rad[id-1] + joint_vel * ts;
-        Serial.print(luxo_jr_dxl_present_rad[id-1]);
-        luxo_jr_present_dxl_pos[id-1] = luxo_jr_dxl_present_rad[id-1] * (180/PI) / 0.29;
-        LuxoJrJoint.positionControl(luxo_jr_present_dxl_pos);
-        Serial.println(" aa");
-      }
-      else if (luxo_jr_dxl_goal_rad[id-1] < luxo_jr_dxl_present_rad[id-1])
-      {
-        joint_vel = max(joint_vel - (joint_acc * ts), -joint_max_vel);
-        joint_vel = max(joint_vel, -sqrt(2*joint_acc*abs(luxo_jr_dxl_goal_rad[id-1] - luxo_jr_dxl_present_rad[id-1])));
-        luxo_jr_dxl_present_rad[id-1] = luxo_jr_dxl_present_rad[id-1] + joint_vel * ts;
-        Serial.print(luxo_jr_dxl_present_rad[id-1]);
-        luxo_jr_present_dxl_pos[id-1] = luxo_jr_dxl_present_rad[id-1] * (180/PI) / 0.29;
-        LuxoJrJoint.positionControl(luxo_jr_present_dxl_pos);
-        Serial.println(" bb");
-      }
+      LuxoJrJoint.positionControl(luxo_jr_dxl_present_pos);
+    }
+    else if (luxo_jr_dxl_goal_rad[id-1] < luxo_jr_dxl_present_rad[id-1])
+    {
+      joint_vel[id-1] = max(joint_vel[id-1] - (acc * ts), -max_vel);
+      joint_vel[id-1] = max(joint_vel[id-1], -sqrt(2*acc*abs(luxo_jr_dxl_goal_rad[id-1] - luxo_jr_dxl_present_rad[id-1])));
+      luxo_jr_dxl_present_rad[id-1] = luxo_jr_dxl_present_rad[id-1] + joint_vel[id-1] * ts;
+      luxo_jr_dxl_present_pos[id-1] = LuxoJrJoint.convertRadian2Value(luxo_jr_dxl_present_rad[id-1]);
+
+      Serial.println(joint_vel[id-1]);
+      Serial.print(" ");
+      //Serial.println(luxo_jr_dxl_present_pos[id-1]);
+      //Serial.print(" ");
+
+      LuxoJrJoint.positionControl(luxo_jr_dxl_present_pos);
     }
   }
 }

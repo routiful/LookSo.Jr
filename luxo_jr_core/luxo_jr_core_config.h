@@ -26,23 +26,28 @@
 #include "wheel_driver.h"
 #include "luxo_jr_controller.h"
 
-#define CONTROL_PEROID        8000
+#define CONTROL_PEROID              8000
 
-#define LEFT                  0
-#define RIGHT                 1
+#define LEFT                        0
+#define RIGHT                       1
 
-#define WHEEL_RADIUS          0.033 // radian
-#define WHEEL_SEPARATION      0.16  // meter
+#define WHEEL_RADIUS                0.033 // radian
+#define WHEEL_SEPARATION            0.16  // meter
 
-#define VELOCITY_CONSTANT_VAULE      1263.632956882  // V = r * w = r * RPM * 0.10472
+#define VELOCITY_CONSTANT_VAULE     1263.632956882  // V = r * w = r * RPM * 0.10472
                                                      //   = 0.033 * 0.229 * Goal RPM * 0.10472
                                                      // Goal RPM = V * 1263.632956882
 
-#define VELOCITY_LINEAR_X     0.05
-#define VELOCITY_ANGULAR_Z    0.05
-#define VELOCITY_STEP         0.02
+#define VELOCITY_LINEAR_X           0.05
+#define VELOCITY_ANGULAR_Z          0.05
+#define VELOCITY_STEP               0.02
 
-#define LIMIT_XM_MAX_VELOCITY 480
+#define LIMIT_XM_MAX_VELOCITY       480
+
+#define MOTOR_NUM                   4
+
+#define DEGREE2RADIAN               (PI / 180.0)
+#define RADIAN2DEGREE               (180.0 / PI)
 
 #define min(a,b) ((a)<(b)?(a):(b))
 #define max(a,b) ((a)<(b)?(b):(a))

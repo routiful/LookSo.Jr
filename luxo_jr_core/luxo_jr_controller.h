@@ -36,14 +36,17 @@
 #define BAUDRATE                        1000000 // baurd rate of Dynamixel
 #define DEVICENAME                      ""      // no need setting on OpenCR
 
-#define MOTOR_NUM                       1
+#define MOTOR_NUM                       4
 #define TORQUE_ENABLE                   1       // Value for enabling the torque
 #define TORQUE_DISABLE                  0       // Value for disabling the torque
 
-#define DEGREE2RADIAN                   (PI / 180.0)
-#define RADIAN2DEGREE                   (180.0 / PI)
+#define VALUE_OF_MAX_RADIAN_POSITION    1024
+#define VALUE_OF_MIN_RADIAN_POSITION    0
+#define VALUE_OF_0_RADIAN_POSITION      512
+#define MAX_RADIAN                      2.6
+#define MIN_RADIAN                      -2.6
 
-#define JOINT_STEP                      0.005   //radian
+#define REPEAT                          60
 
 class LuxoJrController
 {
@@ -55,6 +58,8 @@ class LuxoJrController
   bool setTorque(uint8_t id, bool onoff);
   bool readPosition(int8_t id, int *position);
   bool positionControl(int goal_position[4]);
+  int convertRadian2Value(float radian);
+  float convertValue2Radian(int value);
 
  private:
   int8_t baudrate_;
