@@ -52,14 +52,31 @@
 #define min(a,b) ((a)<(b)?(a):(b))
 #define max(a,b) ((a)<(b)?(b):(a))
 
-//#define GET_MOTION
+ // #define GET_MOTION
 #define MOTION_PLAY
 
 // MOTION SEQUENCE
-#define STOP_MOTION       1
-#define LUXO_JR_POWER_ON  1
-#define HEAD_UP           3
-#define HEAD_TWIST        5
+#define STOP_MOTION                 1
+// #1 Please move
+#define A_LUXO_JR_POWER_ON          1
+#define A_HEAD_UP                   3
+#define A_STRETCH                   5
+#define A_HEAD_DOWN                 7
+// #2 Luxo Jr wake up
+#define B_HEAD_TWIST_GO             9
+#define B_HEAD_TWIST_BACK           11
+#define B_GET_UP                    13
+#define B_HEAD_TWIST_AGAIN_GO       15
+#define B_HEAD_TWIST_AGAIN_BACK     17
+#define B_LOOK_UP                   19
+#define B_LOOK_DOWN                 21
+#define B_LOOK_FRONT                23
+#define B_MOVE_FRONT                25
+#define B_HEAD_TWIST_AGAIN          27
+#define B_MOVE_BACK                 29
+#define B_LOOK_AROUND_GO            31
+#define B_LOOK_AROUND_BACK          33
+#define B_HEAD_TWIST_LAST           35
 
 int luxo_jr_dxl_present_pos_[4] = {0, 0, 0, 0};
 int luxo_jr_dxl_goal_pos_[4] = {0, 0, 0, 0}; //degree
@@ -85,7 +102,7 @@ float const_start_time_[4] = {0.0, 0.0, 0.0, 0.0};
 float decel_start_time_[4] = {0.0, 0.0, 0.0, 0.0};
 float move_time_[4] = {0.0, 0.0, 0.0, 0.0};
 
-int luxo_mov_cnt_ = 0, wheel_mov_cnt_ = 0, scene_delay_cnt = 0;
+int luxo_mov_cnt_ = 0, wheel_mov_cnt_ = 0, scene_delay_cnt_ = 0;
 
 bool wheel_motion_end_flag_  = false;
 bool luxo_jr_motion_end_flag_ = false;

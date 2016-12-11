@@ -82,6 +82,7 @@ void handler_control(void)
   {
     luxo_mov_cnt_ = 0;
     wheel_mov_cnt_ = 0;
+    scene_delay_cnt_ = 0;
 
     wheel_motion_end_flag_ = false;
     luxo_jr_motion_end_flag_ = false;
@@ -99,27 +100,136 @@ void trailor(int scene)
 {
   switch (scene)
   {
-    case LUXO_JR_POWER_ON:
+    // #1 Please move
+    case A_LUXO_JR_POWER_ON:
       luxo_jr_motion(21, 81, 30, 0, 0.3, 1.5);
       wheel_motion(0.0, 0.0, 0.0);
       break;
-    case LUXO_JR_POWER_ON+STOP_MOTION:
+    case A_LUXO_JR_POWER_ON+STOP_MOTION:
       scene_delay(3.0);
       break;
-    case HEAD_UP:
-      luxo_jr_motion(21, 81, -45, 0, 0.3, 3.0);
+    case A_HEAD_UP:
+      luxo_jr_motion(21, 81, -45, -90, 0.3, 2.0);
       wheel_motion(0.0, 0.0, 0.0);
       break;
-    case HEAD_UP+STOP_MOTION:
-      scene_delay(1.0);
-      break;
-    case HEAD_TWIST:
-      luxo_jr_motion(38, 80, -9, 0, 0.3, 1.0);
-      wheel_motion(0.0, 0.0, 0.0);
-      break;
-    case HEAD_TWIST+STOP_MOTION:
+    case A_HEAD_UP+STOP_MOTION:
       scene_delay(5.0);
       break;
+    case A_STRETCH:
+      luxo_jr_motion(30, 0, 0, 90, 0.3, 0.5);
+      wheel_motion(0.0, 0.0, 0.0);
+      break;
+    case A_STRETCH+STOP_MOTION:
+      scene_delay(2.0);
+      break;
+    case A_HEAD_DOWN:
+      luxo_jr_motion(38, 80, -9, 0, 0.3, 2.5);
+      wheel_motion(0.0, 0.0, 0.0);
+      break;
+    case A_HEAD_DOWN+STOP_MOTION:
+      scene_delay(10.0);
+      break;
+
+    // #2 Luxo Jr wake up
+    case B_HEAD_TWIST_GO:
+      luxo_jr_motion(38, 80, -9, 20, 0.3, 0.1);
+      wheel_motion(0.0, 0.0, 0.0);
+      break;
+    case B_HEAD_TWIST_GO+STOP_MOTION:
+      scene_delay(1.0);
+      break;
+    case B_HEAD_TWIST_BACK:
+      luxo_jr_motion(38, 80, -9, 0, 0.3, 0.1);
+      wheel_motion(0.0, 0.0, 0.0);
+      break;
+    case B_HEAD_TWIST_BACK+STOP_MOTION:
+      scene_delay(5.0);
+      break;
+    case B_GET_UP:
+      luxo_jr_motion(-41, 63, 61, 0, 0.3, 3.0);
+      wheel_motion(0.0, 0.0, 0.0);
+      break;
+    case B_GET_UP+STOP_MOTION:
+      scene_delay(1.0);
+      break;
+    case B_HEAD_TWIST_AGAIN_GO:
+      luxo_jr_motion(-41, 63, 61, 30, 0.3, 1.0);
+      wheel_motion(0.0, 0.0, 0.0);
+      break;
+    case B_HEAD_TWIST_AGAIN_GO+STOP_MOTION:
+      scene_delay(0.5);
+      break;
+    case B_HEAD_TWIST_AGAIN_BACK:
+      luxo_jr_motion(-41, 63, 61, 0, 0.3, 1.0);
+      wheel_motion(0.0, 0.0, 0.0);
+      break;
+    case B_HEAD_TWIST_AGAIN_BACK+STOP_MOTION:
+      scene_delay(1.0);
+      break;
+    case B_LOOK_UP:
+      luxo_jr_motion(-41, 63, 30, 0, 0.3, 1.0);
+      wheel_motion(0.0, 0.0, 0.0);
+      break;
+    case B_LOOK_UP+STOP_MOTION:
+      scene_delay(1.0);
+      break;
+    case B_LOOK_DOWN:
+      luxo_jr_motion(-41, 63, 90, 0, 0.3, 2.0);
+      wheel_motion(0.0, 0.0, 0.0);
+      break;
+    case B_LOOK_DOWN+STOP_MOTION:
+      scene_delay(1.0);
+      break;
+    case B_LOOK_FRONT:
+      luxo_jr_motion(-41, 63, 61, 0, 0.3, 1.0);
+      wheel_motion(0.0, 0.0, 0.0);
+      break;
+    case B_LOOK_FRONT+STOP_MOTION:
+      scene_delay(1.0);
+      break;
+    case B_MOVE_FRONT:
+      luxo_jr_motion(-6, 54, 36, 0, 0.3, 0.3);
+      wheel_motion(2.0, 0.0, 0.3);
+      break;
+    case B_MOVE_FRONT+STOP_MOTION:
+      scene_delay(1.0);
+      break;
+    case B_HEAD_TWIST_AGAIN:
+      luxo_jr_motion(-6, 54, 36, 30, 0.3, 0.2);
+      wheel_motion(0.0, 0.0, 0.0);
+      break;
+    case B_HEAD_TWIST_AGAIN+STOP_MOTION:
+      scene_delay(2.0);
+      break;
+    case B_MOVE_BACK:
+      luxo_jr_motion(-41, 63, 61, 30, 0.3, 0.2);
+      wheel_motion(-2.0, 0.0, 0.2);
+      break;
+    case B_MOVE_BACK+STOP_MOTION:
+      scene_delay(2.0);
+      break;
+    case B_LOOK_AROUND_GO:
+      luxo_jr_motion(-41, 63, 61, 0, 0.3, 0.3);
+      wheel_motion(0.0, -2.5, 0.3);
+      break;
+    case B_LOOK_AROUND_GO+STOP_MOTION:
+      scene_delay(1.0);
+      break;
+    case B_LOOK_AROUND_BACK:
+      luxo_jr_motion(-41, 63, 61, 0, 0.3, 0.3);
+      wheel_motion(0.0, 2.5, 0.3);
+      break;
+    case B_LOOK_AROUND_BACK+STOP_MOTION:
+      scene_delay(1.0);
+      break;
+    case B_HEAD_TWIST_LAST:
+      luxo_jr_motion(-41, 63, 61, -30, 0.3, 0.2);
+      wheel_motion(0.0, 0.0, 0.0);
+      break;
+    case B_HEAD_TWIST_LAST+STOP_MOTION:
+      scene_delay(3.0);
+      break;
+
     default:
       wheel_motion(0.0, 0.0, 0.0, 0.0);
       break;
@@ -383,7 +493,7 @@ void scene_delay(float second)
 {
   int delay_cnt = second / ts_;
 
-  if (scene_delay_cnt >= delay_cnt)
+  if (scene_delay_cnt_ >= delay_cnt)
   {
     scene_delay_end_flag_ = true;
     scene_++;
@@ -391,7 +501,7 @@ void scene_delay(float second)
   else
   {
     scene_delay_end_flag_ = false;
-    scene_delay_cnt++;
+    scene_delay_cnt_++;
   }
 }
 #endif // LUXO_CORE_INO
