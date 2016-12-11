@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 
-/* Authors: Darby Lim, Kim min jae, Kim Tae Min */
+/* Authors: Darby Lim */
 
 #ifndef LUXO_CORE_CONFIG_H_
 #define LUXO_CORE_CONFIG_H_
@@ -44,7 +44,7 @@
 
 #define LIMIT_XM_MAX_VELOCITY       480
 
-#define MOTOR_NUM                   4
+#define MOTOR_NUM                   1
 
 #define DEGREE2RADIAN               (PI / 180.0)
 #define RADIAN2DEGREE               (180.0 / PI)

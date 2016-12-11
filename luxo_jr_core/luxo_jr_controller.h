@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 
-/* Authors: Darby Lim, Kim Min Jae, Kim Tae Min */
+/* Authors: Darby Lim */
 
 #ifndef LUXO_JR_CONTROLLER_H_
 #define LUXO_JR_CONTROLLER_H_
@@ -38,7 +38,7 @@
 #define BAUDRATE                        1000000 // baurd rate of Dynamixel
 #define DEVICENAME                      ""      // no need setting on OpenCR
 
-#define MOTOR_NUM                       4
+#define MOTOR_NUM                       1
 #define TORQUE_ENABLE                   1       // Value for enabling the torque
 #define TORQUE_DISABLE                  0       // Value for disabling the torque
 

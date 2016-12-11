@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 
-/* Authors: Darby Lim, Kim min jae, Kim Tae Min */
+/* Authors: Darby Lim */
 
 #include "luxo_jr_controller.h"
 

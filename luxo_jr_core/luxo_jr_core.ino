@@ -1,3 +1,21 @@
+/*******************************************************************************
+* Copyright 2016 Luxo.Jr Team in OROCA.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*******************************************************************************/
+
+/* Authors: Darby Lim */
+
 #ifndef LUXO_CORE_INO
 #define LUXO_CORE_INO
 
@@ -8,37 +26,61 @@ RC100 remote_controller;
 WheelDriver LuxoJrWheel;
 LuxoJrController LuxoJrJoint;
 
-int luxo_jr_dxl_present_pos[4] = {0, 0, 0, 0};
-int luxo_jr_dxl_goal_pos[4] = {0, 0, 0, 0}; //degree
+int luxo_jr_dxl_present_pos_[4] = {0, 0, 0, 0};
+int luxo_jr_dxl_goal_pos_[4] = {0, 0, 0, 0}; //degree
 
-float luxo_jr_dxl_present_rad[4] = {0.0, 0.0, 0.0, 0.0};
-float luxo_jr_dxl_goal_rad[4] = {0.0, 0.0, 0.0, 0.0};
+float luxo_jr_dxl_present_rad_[4] = {0.0, 0.0, 0.0, 0.0};
+float luxo_jr_dxl_goal_rad_[4] = {0.0, 0.0, 0.0, 0.0};
 
-float joint_vel[4]= {0.0, 0.0, 0.0, 0.0};
+float computed_wheel_vel_[2] = {0.0, 0.0}, luxo_jr_wheel_vel_[2] = {0.0, 0.0};
+float computed_joint_vel_[4] = {0.0, 0.0, 0.0, 0.0};
 
-float luxo_jr_linear_x = 0.0, luxo_jr_angular_z = 0.0,  const_cmd_vel = 0.0;
-float mov_time = 1.5, ts = 0.008, luxo_jr_acc = 0.0, luxo_jr_max_vel = 0.0;
-int mov_cnt = 0, scene = 1;
+float luxo_jr_linear_x_ = 0.0, luxo_jr_angular_z_ = 0.0, const_cmd_vel_ = 0.0;
+float ts_ = 0.008, luxo_jr_acc_ = 0.0, luxo_jr_max_vel_ = 0.0;
+int mov_cnt_ = 0, scene_ = 1;
+
+bool wheel_motion_flag_  = false;
+bool luxo_jr_motion_flag_ = false;
+
+float acceleration_;
+float deceleration_;
+float max_velocity_;
+//
+// float initial_pos_;
+//
+// float current_time_;
+// float current_pos_;
+// float current_vel_;
+// float current_acc_;
+//
+// float final_pos_;
+//
+float accel_time_;
+float const_time_;
+float decel_time_;
+//
+float const_start_time_;
+float decel_start_time_;
+float move_time_;
 
 void setup()
 {
   Serial.begin(115200);
-  //while(!Serial);
+  while(!Serial);
 
   remote_controller.begin(1);
 
   LuxoJrWheel.init();
   LuxoJrJoint.init();
 
-  blink(1500, 3);
+  //blink(1500, 3);
   timerInit();
 }
 
 void loop()
 {
-  receiveRemoteControl();
+  //receiveRemoteControl();
 
-#ifdef DEBUG
   // Serial.print("luxo_jr_linear_x : ");
   // Serial.print(luxo_jr_linear_x);
   // Serial.print(" luxo_jr_angular_z : ");
@@ -56,7 +98,6 @@ void loop()
   //   Serial.print(" ");
   //   Serial.println(luxo_jr_present_pos[3]);
   // }
-#endif
 }
 
 void timerInit()
@@ -70,9 +111,28 @@ void timerInit()
 
 void handler_control(void)
 {
-  controlMotorSpeed();
+  // if (wheel_motion_flag_ == true)
+  // {
+  //   scene_++;
+  //   wheel_motion_flag_ = false;
+  // }
+  //
+  // trailor(scene_);
+  //
+  // controlMotorSpeed();
 
-  trailor(scene);
+  for (int id = 1; id < MOTOR_NUM+1; id++)
+  {
+    LuxoJrJoint.readPosition(id, &luxo_jr_dxl_present_pos_[id-1]);
+  }
+
+  luxo_jr_dxl_goal_pos_[0] = -90;
+  luxo_jr_dxl_goal_pos_[1] = 0;
+  luxo_jr_dxl_goal_pos_[2] = 0;
+  luxo_jr_dxl_goal_pos_[3] = 0;
+
+  trapezoidalTimeProfile(luxo_jr_dxl_present_pos_, luxo_jr_dxl_goal_pos_, 0.3, 0.3, 2.0);
+  luxoJrAction();
 }
 
 void trailor(int scene)
@@ -80,75 +140,28 @@ void trailor(int scene)
   switch (scene)
   {
     case 1:
-      luxo_motion(1.5, 0, 90, 0, 0, 4.0, 4.0, 500, 0.0, 0.0);
+      wheel_motion(-0.0, 0.1, 0.5, 0.5);
       break;
     case 2:
-      luxo_motion(1.5, 0, 90, 0, -90, 3.0, 3.0, 800, 0.0, 0.0);
-      break;
-    case 3:
-      luxo_motion(2.0, 0, 90, 0, 90, 3.0, 3.0, 800, 0.0, 0.0);
-      break;
-    case 4:
-      luxo_motion(1.5, -45, 85, 50, 0, 3.0, 3.0, 800, 0.0, 0.0);
-      break;
-    case 5:
-      luxo_motion(1.5, 50, -50, -30, 0, 3.0, 3.0, 2000, 0.0, 0.0);
-      break;
-    case 6:
-      luxo_motion(1.5, 30, -50, -30, 0, 3.0, 3.0, 1500, 0.0, 0.0);
-      break;
-    case 7:
-      luxo_motion(1.5, 10, -50, -30, 0, 3.0, 3.0, 2000, -0.02, 0.0);
-      break;
-    case 8:
-      luxo_motion(3.0, -45, 85, 50, 0, 3.0, 3.0, 100, 0.0, 0.0);
-      break;
-    case 9:
-      luxo_motion(0.1, -45, 85, 50, 0, 3.0, 3.0, 100, 0.0, -1.0);
-      scene++;
-      break;
-    case 10:
-      luxo_motion(0.1, -45, 85, 50, 0, 3.0, 3.0, 100, 0.0, 1.0);
-      scene++;
-      break;
-    case 11:
-      luxo_motion(0.0, -45, 85, 50, 0, 3.0, 3.0, 100, 0.0, 0.0);
+      wheel_motion(0.0, -0.1, 0.5, 0.5);
       break;
     default:
+      wheel_motion(0.0, -0.1, 0.5, 0.5);
       break;
   }
 }
 
-void luxo_motion(float mov, int a, int b, int c, int d, float acc, float vel, int ms, float linear, float angular)
+void wheel_motion(float linear, float angular, float acc, float vel)
 {
-  Serial.println(scene);
-  luxo_jr_dxl_goal_pos[0] = a;
-  luxo_jr_dxl_goal_pos[1] = b;
-  luxo_jr_dxl_goal_pos[2] = c;
-  luxo_jr_dxl_goal_pos[3] = d;
+  float goal_vel[2];
 
-  luxo_jr_linear_x  = linear;
-  luxo_jr_angular_z = angular;
+  luxo_jr_wheel_vel_[0] = luxo_jr_linear_x_;
+  luxo_jr_wheel_vel_[1] = luxo_jr_angular_z_;
 
-  if (mov > 0.0)
-  {
-    if (mov_cnt < (mov_time/ts))
-    {
-      trapezoidalProfile(acc, vel, luxo_jr_dxl_goal_pos);
-      mov_cnt++;
-    }
-    else
-    {
-      delay(ms);
-      scene++;
-      mov_cnt = 0;
-    }
-  }
-  else
-  {
-    delay(ms);
-    scene++;
-  }
+  goal_vel[0]  = linear;
+  goal_vel[1]  = angular;
+
+  trapezoidalVelocityProfile(luxo_jr_wheel_vel_, goal_vel, acc, vel);
 }
 
 void receiveRemoteControl(void)
@@ -161,37 +174,37 @@ void receiveRemoteControl(void)
 
     if(received_data & RC100_BTN_U)
     {
-      luxo_jr_linear_x  += VELOCITY_LINEAR_X;
+      luxo_jr_linear_x_  += VELOCITY_LINEAR_X;
     }
     else if(received_data & RC100_BTN_D)
     {
-      luxo_jr_linear_x  -= VELOCITY_LINEAR_X;
+      luxo_jr_linear_x_  -= VELOCITY_LINEAR_X;
     }
     else if(received_data & RC100_BTN_L)
     {
-      luxo_jr_angular_z += VELOCITY_ANGULAR_Z;
+      luxo_jr_angular_z_ += VELOCITY_ANGULAR_Z;
     }
     else if(received_data & RC100_BTN_R)
     {
-      luxo_jr_angular_z -= VELOCITY_ANGULAR_Z;
+      luxo_jr_angular_z_ -= VELOCITY_ANGULAR_Z;
     }
     else if(received_data & RC100_BTN_1)
     {
-      const_cmd_vel += VELOCITY_STEP;
+      const_cmd_vel_ += VELOCITY_STEP;
     }
     else if(received_data & RC100_BTN_3)
     {
-      const_cmd_vel -= VELOCITY_STEP;
+      const_cmd_vel_ -= VELOCITY_STEP;
     }
     else if(received_data & RC100_BTN_6)
     {
-      luxo_jr_linear_x  = const_cmd_vel;
-      luxo_jr_angular_z = 0.0;
+      luxo_jr_linear_x_  = const_cmd_vel_;
+      luxo_jr_angular_z_ = 0.0;
     }
     else if(received_data & RC100_BTN_5)
     {
-      luxo_jr_linear_x  = 0.0;
-      luxo_jr_angular_z = 0.0;
+      luxo_jr_linear_x_  = 0.0;
+      luxo_jr_angular_z_ = 0.0;
     }
   }
 }
@@ -202,8 +215,8 @@ void controlMotorSpeed(void)
   double lin_vel1;
   double lin_vel2;
 
-  wheel_speed_cmd[LEFT]  = luxo_jr_linear_x - (luxo_jr_angular_z * WHEEL_SEPARATION / 2);
-  wheel_speed_cmd[RIGHT] = luxo_jr_linear_x + (luxo_jr_angular_z * WHEEL_SEPARATION / 2);
+  wheel_speed_cmd[LEFT]  = luxo_jr_linear_x_ - (luxo_jr_angular_z_ * WHEEL_SEPARATION / 2);
+  wheel_speed_cmd[RIGHT] = luxo_jr_linear_x_ + (luxo_jr_angular_z_ * WHEEL_SEPARATION / 2);
 
   lin_vel1 = wheel_speed_cmd[LEFT] * VELOCITY_CONSTANT_VAULE;
 
@@ -218,43 +231,152 @@ void controlMotorSpeed(void)
   LuxoJrWheel.speedControl((int64_t)lin_vel1, (int64_t)lin_vel2);
 }
 
-void trapezoidalProfile(float acc, float max_vel, int goal_pos[4])
+void trapezoidalVelocityProfile(float pre_vel[2], float goal_vel[2], float acc, float max_vel)
 {
-  // Serial.println(joint_vel[2]);
-  // Serial.print(" ");
+  //Serial.println(luxo_jr_linear_x_);
 
-  if (mov_cnt == 1)
+  for (int num = 0; num < 2; num++)
   {
-    for (int id = 1; id < MOTOR_NUM+1; id++)
+    if (goal_vel[num] > pre_vel[num])
     {
-      LuxoJrJoint.readPosition(id, &luxo_jr_dxl_present_pos[id-1]);
+      computed_wheel_vel_[num] = min(computed_wheel_vel_[num] + (acc * ts_), max_vel);
+      computed_wheel_vel_[num] = min(computed_wheel_vel_[num], sqrt(2*acc*abs(goal_vel[num] - luxo_jr_wheel_vel_[num])));
+      luxo_jr_wheel_vel_[num] = luxo_jr_wheel_vel_[num] + computed_wheel_vel_[num] * ts_;
+
+      luxo_jr_linear_x_  = luxo_jr_wheel_vel_[0];
+      luxo_jr_angular_z_ = luxo_jr_wheel_vel_[1];
+    }
+    else if (goal_vel[num] < pre_vel[num])
+    {
+      computed_wheel_vel_[num] = max(computed_wheel_vel_[num] - (acc * ts_), -max_vel);
+      computed_wheel_vel_[num] = max(computed_wheel_vel_[num], -sqrt(2*acc*abs(goal_vel[num] - luxo_jr_wheel_vel_[num])));
+      luxo_jr_wheel_vel_[num] = luxo_jr_wheel_vel_[num] + computed_wheel_vel_[num] * ts_;
+
+      luxo_jr_linear_x_  = luxo_jr_wheel_vel_[0];
+      luxo_jr_angular_z_ = luxo_jr_wheel_vel_[1];
+    }
+
+    if ( abs(luxo_jr_wheel_vel_[0] - goal_vel[0]) < 0.001 && abs(luxo_jr_wheel_vel_[1] - goal_vel[1]) < 0.001 )
+    {
+      wheel_motion_flag_ = true;
     }
   }
+}
 
-  for (int id = 1; id < MOTOR_NUM+1; id++)
+void trapezoidalTimeProfile(int pre_pos[4], int goal_pos[4], float acc_time, float total_time)
+{
+  trapezoidalTimeProfile(pre_pos, goal_pos, acc_time, acc_time, total_time);
+}
+
+void trapezoidalTimeProfile(int pre_pos[4], int goal_pos[4], float acc_time, float decel_time, float total_time)
+{
+  if (mov_cnt_ != 0)
   {
-    luxo_jr_dxl_present_rad[id-1] = LuxoJrJoint.convertValue2Radian(luxo_jr_dxl_present_pos[id-1]);
-    luxo_jr_dxl_goal_rad[id-1] = goal_pos[id-1]*DEGREE2RADIAN;
-
-    if (luxo_jr_dxl_goal_rad[id-1] > luxo_jr_dxl_present_rad[id-1])
-    {
-      joint_vel[id-1] = min(joint_vel[id-1] + (acc * ts), max_vel);
-      joint_vel[id-1] = min(joint_vel[id-1], sqrt(2*acc*abs(luxo_jr_dxl_goal_rad[id-1] - luxo_jr_dxl_present_rad[id-1])));
-      luxo_jr_dxl_present_rad[id-1] = luxo_jr_dxl_present_rad[id-1] + joint_vel[id-1] * ts;
-      luxo_jr_dxl_present_pos[id-1] = LuxoJrJoint.convertRadian2Value(luxo_jr_dxl_present_rad[id-1]);
-
-      LuxoJrJoint.positionControl(luxo_jr_dxl_present_pos);
-    }
-    else if (luxo_jr_dxl_goal_rad[id-1] < luxo_jr_dxl_present_rad[id-1])
-    {
-      joint_vel[id-1] = max(joint_vel[id-1] - (acc * ts), -max_vel);
-      joint_vel[id-1] = max(joint_vel[id-1], -sqrt(2*acc*abs(luxo_jr_dxl_goal_rad[id-1] - luxo_jr_dxl_present_rad[id-1])));
-      luxo_jr_dxl_present_rad[id-1] = luxo_jr_dxl_present_rad[id-1] + joint_vel[id-1] * ts;
-      luxo_jr_dxl_present_pos[id-1] = LuxoJrJoint.convertRadian2Value(luxo_jr_dxl_present_rad[id-1]);
-
-      LuxoJrJoint.positionControl(luxo_jr_dxl_present_pos);
-    }
+    return;
   }
+  else
+  {
+    luxo_jr_dxl_present_rad_[0] = LuxoJrJoint.convertValue2Radian(pre_pos[0]);
+    luxo_jr_dxl_goal_rad_[0]   = goal_pos[0]*DEGREE2RADIAN;
+    move_time_  = fabs(total_time);
+
+    if((fabs(acc_time) + fabs(decel_time)) <= move_time_)
+    {
+      accel_time_ = fabs(acc_time);
+      decel_time_ = fabs(decel_time);
+      const_time_ = move_time_ - accel_time_ - decel_time_;
+    }
+    else
+    {
+      float time_gain = move_time_ / (fabs(acc_time) + fabs(decel_time));
+      accel_time_ = time_gain*fabs(acc_time);
+      decel_time_ = time_gain*fabs(decel_time);
+      const_time_ = 0;
+    }
+
+    const_start_time_ = accel_time_;
+    decel_start_time_ = accel_time_ + const_time_;
+
+    float pos_diff = luxo_jr_dxl_goal_rad_[0] - luxo_jr_dxl_present_rad_[0];
+    max_velocity_ = 2*pos_diff / (move_time_ + const_time_);
+    acceleration_ = max_velocity_ / accel_time_;
+    deceleration_ = -max_velocity_ / decel_time_;
+
+    // Serial.print(move_time_);Serial.print("  ");
+    // Serial.print(const_start_time_);Serial.print("  ");
+    // Serial.print(decel_start_time_);Serial.print("  ");
+    // Serial.print(max_velocity_);Serial.print("  ");
+    // Serial.print(acceleration_);Serial.print("  ");
+    // Serial.println(deceleration_);//Serial.print("  ");
+    // //acc section
+    // pos_coeff_accel_section_.coeffRef(0,0) = 0.5*acceleration_;
+    // pos_coeff_accel_section_.coeffRef(1,0) = 0;
+    // pos_coeff_accel_section_.coeffRef(2,0) = initial_pos_;
+    //
+    // vel_coeff_accel_section_.coeffRef(0,0) = 0;
+    // vel_coeff_accel_section_.coeffRef(1,0) = acceleration_;
+    // vel_coeff_accel_section_.coeffRef(2,0) = 0;
+    //
+    // //const section
+    // pos_coeff_const_section_.coeffRef(0,0) = 0;
+    // pos_coeff_const_section_.coeffRef(1,0) = max_velocity_;
+    // pos_coeff_const_section_.coeffRef(2,0) = -0.5*acceleration_*accel_time_*accel_time_ + initial_pos_;
+    //
+    // vel_coeff_const_section_.coeffRef(0,0) = 0;
+    // vel_coeff_const_section_.coeffRef(1,0) = 0;
+    // vel_coeff_const_section_.coeffRef(2,0) = max_velocity_;
+    //
+    // //decel section
+    // pos_coeff_decel_section_.coeffRef(0,0) = 0.5*deceleration_;
+    // pos_coeff_decel_section_.coeffRef(1,0) = -deceleration_*move_time;
+    // pos_coeff_decel_section_.coeffRef(2,0) = 0.5*deceleration_*move_time*move_time + final_pos_;
+    //
+    // vel_coeff_decel_section_.coeffRef(0,0) = 0;
+    // vel_coeff_decel_section_.coeffRef(1,0) = deceleration_;
+    // vel_coeff_decel_section_.coeffRef(2,0) = -deceleration_*move_time;
+  }
+}
+
+void luxoJrAction()
+{
+  if (mov_cnt_ * ts_ < const_start_time_)
+  {
+    computed_joint_vel_[0] = computed_joint_vel_[0] + (acceleration_ * ts_);
+    luxo_jr_dxl_present_rad_[0] = luxo_jr_dxl_present_rad_[0] + (computed_joint_vel_[0] * ts_);
+    luxo_jr_dxl_present_pos_[0] = LuxoJrJoint.convertRadian2Value(luxo_jr_dxl_present_rad_[0]);
+
+    LuxoJrJoint.positionControl(luxo_jr_dxl_present_pos_);
+    mov_cnt_++;
+    //Serial.print("accel");Serial.print("  ");
+  }
+  else if (mov_cnt_ * ts_ >= const_start_time_ && mov_cnt_ * ts_ < decel_start_time_)
+  {
+    computed_joint_vel_[0] = max_velocity_;
+    luxo_jr_dxl_present_rad_[0] = luxo_jr_dxl_present_rad_[0] + (computed_joint_vel_[0] * ts_);
+    luxo_jr_dxl_present_pos_[0] = LuxoJrJoint.convertRadian2Value(luxo_jr_dxl_present_rad_[0]);
+
+    LuxoJrJoint.positionControl(luxo_jr_dxl_present_pos_);
+    mov_cnt_++;
+    //Serial.print("max");Serial.print("  ");
+  }
+  else if (mov_cnt_ <= move_time_ / ts_)
+  {
+    computed_joint_vel_[0] = computed_joint_vel_[0] + (deceleration_ * ts_);
+    luxo_jr_dxl_present_rad_[0] = luxo_jr_dxl_present_rad_[0] + (computed_joint_vel_[0] * ts_);
+    luxo_jr_dxl_present_pos_[0] = LuxoJrJoint.convertRadian2Value(luxo_jr_dxl_present_rad_[0]);
+
+    LuxoJrJoint.positionControl(luxo_jr_dxl_present_pos_);
+    mov_cnt_++;
+    //Serial.print("decel");Serial.print("  ");
+  }
+  else //if ( abs(luxo_jr_dxl_present_rad_[0] - luxo_jr_dxl_goal_rad_[0]) < 0.001 )
+  {
+    mov_cnt_ = 0;
+  }
+  Serial.println(computed_joint_vel_[0]);Serial.print("  ");
+  //Serial.print(luxo_jr_dxl_present_rad_[0]);Serial.print("  ");
+  //Serial.print(luxo_jr_dxl_goal_rad_[0]);Serial.print("  ");
+  //Serial.println(mov_cnt_);
 }
 
 void blink(int ms, int repeat)
