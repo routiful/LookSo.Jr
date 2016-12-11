@@ -60,7 +60,7 @@ bool LuxoJrController::init(void)
 
   groupSyncWrite_ = new dynamixel::GroupSyncWrite(portHandler_, packetHandler_, ADDR_AX_GOAL_POSITION, LEN_AX_GOAL_POSITION);
 
-  // Enable Dynamixel Torque
+  //Enable Dynamixel Torque
   for (int id = 1; id < MOTOR_NUM+1; id++)
   {
     setTorque(id, TORQUE_ENABLE);

@@ -44,12 +44,53 @@
 
 #define LIMIT_XM_MAX_VELOCITY       480
 
-#define MOTOR_NUM                   1
+#define MOTOR_NUM                   4
 
 #define DEGREE2RADIAN               (PI / 180.0)
 #define RADIAN2DEGREE               (180.0 / PI)
 
 #define min(a,b) ((a)<(b)?(a):(b))
 #define max(a,b) ((a)<(b)?(b):(a))
+
+//#define GET_MOTION
+#define MOTION_PLAY
+
+// MOTION SEQUENCE
+#define STOP_MOTION       1
+#define LUXO_JR_POWER_ON  1
+#define HEAD_UP           3
+#define HEAD_TWIST        5
+
+int luxo_jr_dxl_present_pos_[4] = {0, 0, 0, 0};
+int luxo_jr_dxl_goal_pos_[4] = {0, 0, 0, 0}; //degree
+
+float luxo_jr_dxl_present_rad_[4] = {0.0, 0.0, 0.0, 0.0};
+float luxo_jr_dxl_goal_rad_[4] = {0.0, 0.0, 0.0, 0.0};
+
+float computed_wheel_vel_[2] = {0.0, 0.0}, luxo_jr_wheel_vel_[2] = {0.0, 0.0};
+float computed_joint_vel_[4] = {0.0, 0.0, 0.0, 0.0};
+
+float luxo_jr_linear_x_ = 0.0, luxo_jr_angular_z_ = 0.0, const_cmd_vel_ = 0.0;
+float ts_ = 0.008, luxo_jr_acc_ = 0.0, luxo_jr_max_vel_ = 0.0;
+
+float acceleration_[4] = {0.0, 0.0, 0.0, 0.0};
+float deceleration_[4] = {0.0, 0.0, 0.0, 0.0};
+float max_velocity_[4] = {0.0, 0.0, 0.0, 0.0};
+
+float accel_time_[4] = {0.0, 0.0, 0.0, 0.0};
+float const_time_[4] = {0.0, 0.0, 0.0, 0.0};
+float decel_time_[4] = {0.0, 0.0, 0.0, 0.0};
+
+float const_start_time_[4] = {0.0, 0.0, 0.0, 0.0};
+float decel_start_time_[4] = {0.0, 0.0, 0.0, 0.0};
+float move_time_[4] = {0.0, 0.0, 0.0, 0.0};
+
+int luxo_mov_cnt_ = 0, wheel_mov_cnt_ = 0, scene_delay_cnt = 0;
+
+bool wheel_motion_end_flag_  = false;
+bool luxo_jr_motion_end_flag_ = false;
+bool scene_delay_end_flag_ = false;
+
+int scene_ = 1;
 
 #endif // LUXO_CORE_CONFIG_H_
