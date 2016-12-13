@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 
-/* Authors: Darby Lim, Kim min jae, Kim Tae Min */
+/* Authors: Darby Lim */
 
 #include "luxo_jr_controller.h"
 
@@ -58,9 +58,9 @@ bool LuxoJrController::init(void)
     // return;
   }
 
-  groupSyncWrite_ = new dynamixel::GroupSyncWrite(portHandler_, packetHandler_, ADDR_XM_GOAL_POSITION, LEN_XM_GOAL_POSITION);
+  groupSyncWrite_ = new dynamixel::GroupSyncWrite(portHandler_, packetHandler_, ADDR_AX_GOAL_POSITION, LEN_AX_GOAL_POSITION);
 
-  // Enable Dynamixel Torque
+  //Enable Dynamixel Torque
   for (int id = 1; id < MOTOR_NUM+1; id++)
   {
     setTorque(id, TORQUE_ENABLE);
@@ -78,6 +78,21 @@ bool LuxoJrController::setTorque(uint8_t id, bool onoff)
       packetHandler_->printTxRxResult(dxl_comm_result);
   else if(dxl_error != 0)
       packetHandler_->printRxPacketError(dxl_error);
+}
+
+bool LuxoJrController::setLED(bool onoff)
+{
+  uint8_t dxl_error = 0;
+  int dxl_comm_result = COMM_TX_FAIL;
+
+  for (int id = 1; id < MOTOR_NUM+1; id++)
+  {
+    dxl_comm_result = packetHandler_->write1ByteTxRx(portHandler_, id, ADDR_AX_LED, onoff, &dxl_error);
+    if(dxl_comm_result != COMM_SUCCESS)
+        packetHandler_->printTxRxResult(dxl_comm_result);
+    else if(dxl_error != 0)
+        packetHandler_->printRxPacketError(dxl_error);
+  }
 }
 
 void LuxoJrController::closeDynamixel(void)
@@ -99,7 +114,7 @@ bool LuxoJrController::readPosition(int8_t id, int *position)
 
   int16_t value_16_bit = 0;
 
-  dynamixel_comm_result = packetHandler_->read2ByteTxRx(portHandler_, id, ADDR_XM_PRESENT_POSITION, (uint16_t*)&value_16_bit, &dynamixel_error);
+  dynamixel_comm_result = packetHandler_->read2ByteTxRx(portHandler_, id, ADDR_AX_PRESENT_POSITION, (uint16_t*)&value_16_bit, &dynamixel_error);
 
   if (dynamixel_comm_result == COMM_SUCCESS)
   {
