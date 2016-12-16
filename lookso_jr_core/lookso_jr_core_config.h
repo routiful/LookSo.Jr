@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright 2016 Luxo.Jr Team in OROCA.
+* Copyright 2016 LookSo.Jr Team in OROCA.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -16,15 +16,15 @@
 
 /* Authors: Darby Lim */
 
-#ifndef LUXO_CORE_CONFIG_H_
-#define LUXO_CORE_CONFIG_H_
+#ifndef LOOKSO_CORE_CONFIG_H_
+#define LOOKSO_CORE_CONFIG_H_
 
-#include <IMU.h>
+// #include <IMU.h>
 #include <RC100.h>
 #include <math.h>
 
 #include "wheel_driver.h"
-#include "luxo_jr_controller.h"
+#include "lookso_jr_controller.h"
 
 #define CONTROL_PEROID              8000
 
@@ -55,17 +55,17 @@
 // #define GET_MOTION
  #define MOTION_PLAY
 
-int luxo_jr_dxl_present_pos_[4] = {0, 0, 0, 0};
-int luxo_jr_dxl_goal_pos_[4] = {0, 0, 0, 0}; //degree
+int lookso_jr_dxl_present_pos_[4] = {0, 0, 0, 0};
+int lookso_jr_dxl_goal_pos_[4] = {0, 0, 0, 0}; //degree
 
-float luxo_jr_dxl_present_rad_[4] = {0.0, 0.0, 0.0, 0.0};
-float luxo_jr_dxl_goal_rad_[4] = {0.0, 0.0, 0.0, 0.0};
+float lookso_jr_dxl_present_rad_[4] = {0.0, 0.0, 0.0, 0.0};
+float lookso_jr_dxl_goal_rad_[4] = {0.0, 0.0, 0.0, 0.0};
 
-float computed_wheel_vel_[2] = {0.0, 0.0}, luxo_jr_wheel_vel_[2] = {0.0, 0.0};
+float computed_wheel_vel_[2] = {0.0, 0.0}, lookso_jr_wheel_vel_[2] = {0.0, 0.0};
 float computed_joint_vel_[4] = {0.0, 0.0, 0.0, 0.0};
 
-float luxo_jr_linear_x_ = 0.0, luxo_jr_angular_z_ = 0.0, const_cmd_vel_ = 0.0;
-float ts_ = 0.008, luxo_jr_acc_ = 0.0, luxo_jr_max_vel_ = 0.0;
+float lookso_jr_linear_x_ = 0.0, lookso_jr_angular_z_ = 0.0, const_cmd_vel_ = 0.0;
+float ts_ = 0.008, lookso_jr_acc_ = 0.0, lookso_jr_max_vel_ = 0.0;
 
 float acceleration_[4] = {0.0, 0.0, 0.0, 0.0};
 float deceleration_[4] = {0.0, 0.0, 0.0, 0.0};
@@ -79,18 +79,18 @@ float const_start_time_[4] = {0.0, 0.0, 0.0, 0.0};
 float decel_start_time_[4] = {0.0, 0.0, 0.0, 0.0};
 float move_time_[4] = {0.0, 0.0, 0.0, 0.0};
 
-int luxo_mov_cnt_ = 0, wheel_mov_cnt_ = 0, scene_delay_cnt_ = 0;
+int lookso_mov_cnt_ = 0, wheel_mov_cnt_ = 0, scene_delay_cnt_ = 0;
 
 bool wheel_motion_end_flag_  = false;
-bool luxo_jr_motion_end_flag_ = false;
+bool lookso_jr_motion_end_flag_ = false;
 bool scene_delay_end_flag_ = false;
 
-int scene_ = 0, scene_cnt_ = 122;
+int scene_ = 0, scene_cnt_ = 124;
 
 // leg, wrist, neck, head, motion_time, linear, angular, second, delay
-float trailor_[123][9] = {
-  // #1 Please move(1~5)
-  {21, 81, 30, 0,     1.5,   0.0, 0.0, 0.0,    3.0},     //LUXO_JR_POWER_ON
+float trailor_[125][9] = {
+  //#1 Please move(1~5)
+  {21, 81, 30, 0,     1.5,   0.0, 0.0, 0.0,    3.0},     //lookso_jr_POWER_ON
   {21, 81, -45, -90,  2.0,   0.0, 0.0, 0.0,    3.0},     //HEAD_UP
   {10,-10, 10, 0,     0.6,   0.0, 0.0, 0.0,    0.5},     //STRETCH
   {21, 81, 30, -90,   3.0,   0.0, 0.0, 0.0,    3.0},     //HEAD_DOWN
@@ -102,8 +102,7 @@ float trailor_[123][9] = {
   {21, 81, 30, -90,   0.2,   0.0, 3.0, 0.2,    0.1},     //SPIN
   {21, 81, 30, -90,   0.2,   0.0,-3.0, 0.2,    0.1},     //SPIN
   {21, 81, 30, -90,   0.2,   0.0, 3.0, 0.2,    0.1},     //SPIN
-  {21, 81, 30, -90,   0.2,   0.0,-3.0, 0.2,    15.0},     //SPIN
-
+  {21, 81, 30, -90,   0.2,   0.0,-3.0, 0.2,    38.0},     //SPIN
   // #2 Luxo Jr wake up(6~23)
   {21, 81, 30, -70,   0.1,   0.0, 0.0, 0.0,    1.0},     //HEAD_TWIST
   {21, 81, 30, -90,   0.1,   0.0, 0.0, 0.0,    5.0},     //HEAD_TWIST
@@ -115,15 +114,14 @@ float trailor_[123][9] = {
   {-41, 63, 61,  0,   1.0,   0.0, 0.0, 0.0,    1.0},     //LOOK_FORWARD
   {-6,  54, 36,  0,   0.3,   2.0, 0.0, 0.3,    1.0},     //MOVE_FORWARD
   {-6,  54, 36, 30,   0.2,   0.0, 0.0, 0.0,    2.0},     //HEAD_TWIST_AGAIN_AGAIN
-  {-41, 63, 61, 30,   0.3,  -2.0, 0.0, 0.3,    2.0},     //MOVE_BACK
-  {-41, 63, 61,  0,   0.5,   0.0, 0.5, 0.5,    0.2},     //LOOK_AROUND
+  {-41, 63, 61, 30,   0.3,  -1.5, 0.0, 0.1,    2.0},     //MOVE_BACK
+  {-41, 63, 61,  0,   0.5,   0.0,-0.5, 4.0,    0.2},     //LOOK_AROUND
   {-80, 70, 81,  0,   0.2,   0.0, 0.0, 0.0,    2.0},     //SURPRISE
   {-41, 63, 90,  0,   1.0,   0.0, 0.0, 0.0,    0.3},     //SCAN_DOWN
   {-41, 63, 40,  0,   2.0,   0.0, 0.0, 0.0,    0.3},     //SCAN_UP
   {-41, 63, 61,  0,   1.0,   0.0, 0.0, 0.0,    0.3},     //SCAN_FORWARD
   {-41, 63, 61,  0,   0.7,   0.0,-0.5, 0.7,    2.0},     //LOOK_AROUND
-  {-41, 63, 61,-30,   0.2,   0.0, 0.0, 0.0,    7.0},     //HEAD_TWIST_LAST
-
+  {-41, 63, 61, 0,   3.0,   0.0, 0.0, 0.0,    20.0},     //HEAD_TWIST_LAST
   // #3 Dance time(24~)
   {-41, 63, 70,-30,   0.5,   0.0, 0.0, 0.0,    0.0},     //HEAD_SHAKE
   {-41, 63, 61,-30,   0.5,   0.0, 0.0, 0.0,    1.0},     //HEAD_SHAKE
@@ -149,7 +147,6 @@ float trailor_[123][9] = {
   {-41, 63, 61,-30,   0.5,   0.0, 0.0, 0.0,    0.0},     //HEAD_SHAKE
   {-41, 63, 70,-30,   0.5,   0.0, 0.0, 0.0,    0.0},     //HEAD_SHAKE
   {-41, 63, 61,-30,   0.5,   0.0, 0.0, 0.0,    0.0},     //HEAD_SHAKE
-
   {-41, 46, 80,-30,   0.5,   0.0, 0.0, 0.0,    0.0},     //WRIST_SHAKE
   {-41, 63, 61,-30,   0.5,   0.0, 0.0, 0.0,    0.0},     //WRIST_SHAKE
   {-41, 46, 80,-30,   0.5,   0.0, 0.0, 0.0,    0.0},     //WRIST_SHAKE
@@ -162,7 +159,6 @@ float trailor_[123][9] = {
   {-41, 63, 61,-30,   0.5,   0.0, 0.0, 0.0,    0.0},     //WRIST_SHAKE
   {-41, 46, 80,-30,   0.5,   0.0, 0.0, 0.0,    0.0},     //WRIST_SHAKE
   {-41, 63, 61,-30,   0.5,   0.0, 0.0, 0.0,    0.0},     //WRIST_SHAKE
-
   {-70, 94, 68,-30,   0.5,   0.0, 2.0, 0.3,    0.0},     //LEG_SHAKE
   {-41, 63, 61,-30,   0.5,   0.0, 0.0, 0.0,    0.0},     //LEG_SHAKE
   {-70, 94, 68,-30,   0.5,   0.0, 0.0, 0.0,    0.0},     //LEG_SHAKE
@@ -195,7 +191,6 @@ float trailor_[123][9] = {
   {-41, 63, 61,-30,   0.5,   0.0, 0.0, 0.0,    0.0},     //LEG_SHAKE
   {-70, 94, 68,-30,   0.5,   0.0,-2.0, 0.3,    0.0},     //LEG_SHAKE
   {-41, 63, 61,-30,   0.5,   0.0, 0.0, 0.0,    0.0},     //LEG_SHAKE
-
   {-70, 94, 68,-30,   0.5,   0.0,-2.0, 0.3,    0.0},     //LEG_SHAKE
   {-41, 63, 61,-30,   0.5,   0.0, 2.0, 0.3,    0.0},     //LEG_SHAKE
   {-70, 94, 68,-30,   0.5,   0.0,-2.0, 0.3,    0.0},     //LEG_SHAKE
@@ -208,8 +203,6 @@ float trailor_[123][9] = {
   {-41, 63, 61,-30,   0.5,   0.0, 2.0, 0.3,    0.0},     //LEG_SHAKE
   {-70, 94, 68,-30,   0.5,   0.0,-2.0, 0.3,    0.0},     //LEG_SHAKE
   {-41, 63, 61,-30,   0.5,   0.0, 2.0, 0.3,    0.0},     //LEG_SHAKE
-
-
   {-70, 94, 68,-30,   0.5,   0.0, 2.0, 0.3,    0.0},     //LEG_SHAKE
   {-41, 63, 61,-30,   0.5,   0.0,-2.0, 0.3,    0.0},     //LEG_SHAKE
   {-70, 94, 68,-30,   0.5,   0.0, 2.0, 0.3,    0.0},     //LEG_SHAKE
@@ -221,8 +214,9 @@ float trailor_[123][9] = {
   {-70, 94, 68,-30,   0.5,   0.0, 2.0, 0.3,    0.0},     //LEG_SHAKE
   {-41, 63, 61,-30,   0.5,   0.0,-2.0, 0.3,    0.0},     //LEG_SHAKE
   {-70, 94, 68,-30,   0.5,   0.0, 2.0, 0.3,    0.0},     //LEG_SHAKE
-  {-41, 63, 61,-30,   0.5,   0.0,-2.0, 0.3,    30.0}     //LEG_SHAKE
-
+  {-41, 63, 61,-30,   0.5,   0.0,-2.0, 0.3,    13.0},    //LEG_SHAKE
+  {-41, 63, 61,-50,   0.1,   0.0, 0.0, 0.1,    0.5},     //HEAD_TWIST
+  {-41, 63, 61,-30,   0.1,   0.0, 0.0, 0.1,    30.0}     //HEAD_TWIST
 };
 
-#endif // LUXO_CORE_CONFIG_H_
+#endif // LOOKSO_CORE_CONFIG_H_

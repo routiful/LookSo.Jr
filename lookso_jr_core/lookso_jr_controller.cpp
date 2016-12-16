@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright 2016 Luxo.Jr Team in OROCA.
+* Copyright 2016 LookSo.Jr Team in OROCA.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -16,20 +16,20 @@
 
 /* Authors: Darby Lim */
 
-#include "luxo_jr_controller.h"
+#include "lookso_jr_controller.h"
 
-LuxoJrController::LuxoJrController()
+LookSoJrController::LookSoJrController()
 : baudrate_(BAUDRATE),
   protocol_version_(PROTOCOL_VERSION)
 {
 }
 
-LuxoJrController::~LuxoJrController()
+LookSoJrController::~LookSoJrController()
 {
   closeDynamixel();
 }
 
-bool LuxoJrController::init(void)
+bool LookSoJrController::init(void)
 {
   portHandler_   = dynamixel::PortHandler::getPortHandler(DEVICENAME);
   packetHandler_ = dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION);
@@ -67,7 +67,7 @@ bool LuxoJrController::init(void)
   }
 }
 
-bool LuxoJrController::setTorque(uint8_t id, bool onoff)
+bool LookSoJrController::setTorque(uint8_t id, bool onoff)
 {
   uint8_t dxl_error = 0;
   int dxl_comm_result = COMM_TX_FAIL;
@@ -80,7 +80,7 @@ bool LuxoJrController::setTorque(uint8_t id, bool onoff)
       packetHandler_->printRxPacketError(dxl_error);
 }
 
-bool LuxoJrController::setLED(bool onoff)
+bool LookSoJrController::setLED(bool onoff)
 {
   uint8_t dxl_error = 0;
   int dxl_comm_result = COMM_TX_FAIL;
@@ -95,7 +95,7 @@ bool LuxoJrController::setLED(bool onoff)
   }
 }
 
-void LuxoJrController::closeDynamixel(void)
+void LookSoJrController::closeDynamixel(void)
 {
   // Disable Dynamixel Torque
   for (int id = 1; id < MOTOR_NUM+1; id++)
@@ -107,7 +107,7 @@ void LuxoJrController::closeDynamixel(void)
   portHandler_->closePort();
 }
 
-bool LuxoJrController::readPosition(int8_t id, int *position)
+bool LookSoJrController::readPosition(int8_t id, int *position)
 {
   uint8_t dynamixel_error = 0;
   int dynamixel_comm_result = COMM_RX_FAIL;
@@ -134,7 +134,7 @@ bool LuxoJrController::readPosition(int8_t id, int *position)
   }
 }
 
-bool LuxoJrController::positionControl(int goal_position[4])
+bool LookSoJrController::positionControl(int goal_position[4])
 {
   bool dxl_addparam_result_;
   int8_t dxl_comm_result_;
@@ -161,7 +161,7 @@ bool LuxoJrController::positionControl(int goal_position[4])
   return true;
 }
 
-int LuxoJrController::convertRadian2Value(float radian)
+int LookSoJrController::convertRadian2Value(float radian)
 {
   int value = 0;
   if (radian > 0)
@@ -191,7 +191,7 @@ int LuxoJrController::convertRadian2Value(float radian)
   return value;
 }
 
-float LuxoJrController::convertValue2Radian(int value)
+float LookSoJrController::convertValue2Radian(int value)
 {
   float radian = 0.0;
   if (value > VALUE_OF_0_RADIAN_POSITION)

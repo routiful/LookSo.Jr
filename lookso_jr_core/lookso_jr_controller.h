@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright 2016 Luxo.Jr Team in OROCA.
+* Copyright 2016 LookSo.Jr Team in OROCA.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -14,22 +14,24 @@
 * limitations under the License.
 *******************************************************************************/
 
-/* Authors: Darby Lim, Kim Min Jae, Kim Tae Min */
+/* Authors: Darby Lim */
 
-#ifndef LUXO_JR_CONTROLLER_H_
-#define LUXO_JR_CONTROLLER_H_
+#ifndef LOOKSO_JR_CONTROLLER_H_
+#define LOOKSO_JR_CONTROLLER_H_
 
 #include <DynamixelSDK.h>
 
 // Control table address (XM430-W350-T)
 #define ADDR_AX_TORQUE_ENABLE            24
-#define ADDR_XM_GOAL_POSITION            30
-#define ADDR_XM_PRESENT_POSITION         36
+#define ADDR_AX_GOAL_POSITION            30
+#define ADDR_AX_PRESENT_POSITION         36
+#define ADDR_AX_LED                      25
 
 // Data Byte Length
-#define LEN_XM_TORQUE_ENABLE            1
-#define LEN_XM_GOAL_POSITION            2
-#define LEN_XM_PRESENT_POSITION         2
+#define LEN_AX_TORQUE_ENABLE            1
+#define LEN_AX_GOAL_POSITION            2
+#define LEN_AX_PRESENT_POSITION         2
+#define LEN_AX_LED                      1
 
 #define PROTOCOL_VERSION                1.0     // Dynamixel protocol version 2.0
 
@@ -40,16 +42,27 @@
 #define TORQUE_ENABLE                   1       // Value for enabling the torque
 #define TORQUE_DISABLE                  0       // Value for disabling the torque
 
-class LuxoJrController
+#define VALUE_OF_MAX_RADIAN_POSITION    1024
+#define VALUE_OF_MIN_RADIAN_POSITION    0
+#define VALUE_OF_0_RADIAN_POSITION      512
+#define MAX_RADIAN                      2.6
+#define MIN_RADIAN                      -2.6
+
+#define REPEAT                          0
+
+class LookSoJrController
 {
  public:
-  LuxoJrController();
-  ~LuxoJrController();
+  LookSoJrController();
+  ~LookSoJrController();
   bool init(void);
   void closeDynamixel(void);
   bool setTorque(uint8_t id, bool onoff);
-  bool readPosition(int8_t id, int16_t *position);
-  bool positionControl(float goal_position[4]);
+  bool setLED(bool onoff);
+  bool readPosition(int8_t id, int *position);
+  bool positionControl(int goal_position[4]);
+  int  convertRadian2Value(float radian);
+  float convertValue2Radian(int value);
 
  private:
   int8_t baudrate_;
@@ -59,4 +72,4 @@ class LuxoJrController
   dynamixel::GroupSyncWrite * groupSyncWrite_;
 };
 
-#endif // LUXO_JR_CONTROLLER_H_
+#endif // LOOKSO_JR_CONTROLLER_H_
