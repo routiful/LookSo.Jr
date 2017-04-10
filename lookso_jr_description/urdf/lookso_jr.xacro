@@ -16,7 +16,7 @@
 
   <!-- World fixed joint-->
   <joint name="world_fixed" type="fixed">
-    <origin xyz="0 0 0" rpy="1.57 0 0"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
     <parent link="world"/>
     <child link="link1"/>
   </joint>
@@ -39,10 +39,11 @@
     </visual>
 
     <inertial>
-      <origin xyz="0.00025 0.00000 0.01780" rpy="0 0 0"/>
-      <mass value="0.087"/>
-      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
-      <inertia ixx="0.00001378" ixy="0.0" ixz="-0.00000025" iyy="0.00002381" iyz="0.0" izz="0.00002107" />
+      <origin xyz="0 0 0" />
+      <mass value="0.01" />
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0"
+               iyy="0.001" iyz="0.0"
+               izz="0.001" />
     </inertial>
   </link>
 
@@ -50,7 +51,7 @@
   <joint name="joint1" type="revolute">
     <parent link="link1"/>
     <child link="link2"/>
-    <origin xyz="0.0 0.0 0.010" rpy="0 0 0"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
     <limit velocity="6.5" effort="1000" lower="${-pi*0.9}" upper="${pi*0.9}" />
     <dynamics damping="0.1"/>
@@ -84,10 +85,11 @@
     </visual>
 
     <inertial>
-      <origin xyz="0.00002 -0.00045 0.03293" rpy="0 0 0"/>
-      <mass value="0.117"/>
-      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
-      <inertia ixx="0.00004110" ixy="0.0" ixz="-0.00000025" iyy="0.00002381" iyz="0.0" izz="0.00002107" />
+      <origin xyz="0 0 0" />
+      <mass value="0.01" />
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0"
+               iyy="0.001" iyz="0.0"
+               izz="0.001" />
     </inertial>
   </link>
 
@@ -128,10 +130,11 @@
     </visual>
 
     <inertial>
-      <origin xyz="0.00966 -0.00034 0.11795" rpy="0 0 0"/>
-      <mass value="0.156"/>
-      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
-      <inertia ixx="0.00041624" ixy="0.00000017" ixz="-0.00004492" iyy="0.00042758" iyz="0.00000159" izz="0.00005317" />
+      <origin xyz="0 0 0" />
+      <mass value="0.01" />
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0"
+               iyy="0.001" iyz="0.0"
+               izz="0.001" />
     </inertial>
   </link>
 
@@ -172,10 +175,11 @@
     </visual>
 
     <inertial>
-      <origin xyz="0.11076 -0.00035 0.00050" rpy="0 0 0"/>
-      <mass value="0.149"/>
-      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
-      <inertia ixx="0.00003083" ixy="0.00000147" ixz="-0.00000222" iyy="0.00036703" iyz="-0.00000003" izz="0.00037667" />
+      <origin xyz="0 0 0" />
+      <mass value="0.01" />
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0"
+               iyy="0.001" iyz="0.0"
+               izz="0.001" />
     </inertial>
   </link>
 
@@ -199,5 +203,28 @@
     </actuator>
   </transmission>
 
-<link name="link5"/>
+  <link name="link5">
+    <collision>
+      <origin xyz="0 0 0.0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lookso_jr_description/meshes/link5.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0.0 0 0.0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lookso_jr_description/meshes/link5.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="0.01" />
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0"
+               iyy="0.001" iyz="0.0"
+               izz="0.001" />
+    </inertial>
+  </link>
 </robot>
