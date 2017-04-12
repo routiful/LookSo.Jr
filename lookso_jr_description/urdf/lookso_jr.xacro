@@ -6,7 +6,7 @@
   <xacro:property name="pi" value="3.141592654" />
 
   <!-- Import all Gazebo-customization elements, including Gazebo colors -->
-<!--  <xacro:include filename="$(find lookso_jr_description)/urdf/open_manipulator_chain.gazebo" />-->
+  <xacro:include filename="$(find lookso_jr_description)/urdf/lookso_jr.gazebo.xacro" />
   <!-- Import Rviz colors -->
   <xacro:include filename="$(find lookso_jr_description)/urdf/materials.xacro" />
 

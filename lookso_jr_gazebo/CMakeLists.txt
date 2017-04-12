@@ -2,7 +2,7 @@
 # CMake
 ################################################################################
 cmake_minimum_required(VERSION 2.8.3)
-project(lookso_jr_description)
+project(lookso_jr_gazebo)
 
 ################################################################################
 # Packages
@@ -25,7 +25,7 @@ find_package(catkin REQUIRED COMPONENTS
 ################################################################################
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES lookso_jr_description
+#  LIBRARIES lookso_jr_gazebo
   CATKIN_DEPENDS roscpp std_msgs
 #  DEPENDS system_lib
 )

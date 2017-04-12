@@ -13,13 +13,6 @@
   <gazebo reference="world">
   </gazebo>
 
-  <!-- Base -->
-<!--  <gazebo reference="base">
-    <mu1>0.2</mu1>
-    <mu2>0.2</mu2>
-    <material>Gazebo/Grey</material>
-  </gazebo>-->
-
   <!-- Link1 -->
   <gazebo reference="link1">
     <mu1>0.2</mu1>
@@ -43,6 +36,13 @@
 
   <!-- Link4 -->
   <gazebo reference="link4">
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Grey</material>
+  </gazebo>
+
+  <!-- Link4 -->
+  <gazebo reference="link5">
     <mu1>0.2</mu1>
     <mu2>0.2</mu2>
     <material>Gazebo/Grey</material>
