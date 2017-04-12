@@ -10,6 +10,7 @@ project(lookso_jr_gazebo)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
+  sensor_msgs
 )
 
 ################################################################################
@@ -36,6 +37,10 @@ catkin_package(
 include_directories(
   ${catkin_INCLUDE_DIRS}
 )
+
+add_executable(lookso_jr_test src/lookso_jr_test.cpp)
+target_link_libraries(lookso_jr_test ${catkin_LIBRARIES})
+add_dependencies(lookso_jr_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ################################################################################
 # Install

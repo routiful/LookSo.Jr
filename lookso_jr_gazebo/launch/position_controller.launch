@@ -9,7 +9,5 @@
                                         joint1_position
                                         joint2_position
                                         joint3_position
-                                        joint4_position
-                                        grip_joint_position
-                                        grip_joint_sub_position"/>
+                                        joint4_position"/>
 </launch>
