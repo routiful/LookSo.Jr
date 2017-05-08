@@ -41,7 +41,7 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "lookso_jr_test");
   ros::NodeHandle nh("~");
 
-  lookso_jr_joint_state_pub_ = nh.advertise<sensor_msgs::JointState>("/joint_states", 10);
+  lookso_jr_joint_state_pub_ = nh.advertise<std_msgs::Float64>("/lookso_jr/joint1_position/command", 10);
 
   ros::Subscriber lookso_jr_joint_state_sub = nh.subscribe("/joint_states", 10, looksoJointMsgCallback);
 
