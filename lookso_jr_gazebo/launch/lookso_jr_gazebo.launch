@@ -36,5 +36,5 @@
      args="-urdf -model lookso_jr -z 0.0 -param robot_description"/>
 
   <!-- ros_control robotis manipulator launch file -->
-  <include file="$(find lookso_jr_gazebo)/launch/position_controller.launch"/>
+<!--  <include file="$(find lookso_jr_gazebo)/launch/position_controller.launch"/>-->
 </launch>

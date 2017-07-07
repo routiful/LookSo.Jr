@@ -25,15 +25,10 @@
 #define DEGREE2RADIAN (M_PI / 180.0)
 #define RADIAN2DEGREE (180.0 / M_PI)
 
-ros::Publisher lookso_jr_joint_state_pub_;
 
 void looksoJointMsgCallback(const sensor_msgs::JointState::ConstPtr &msg)
 {
-  std_msgs::Float64 joint;
 
-  joint.data = 30 * DEGREE2RADIAN;
-
-  lookso_jr_joint_state_pub_.publish(joint);
 }
 
 int main(int argc, char **argv)
@@ -41,7 +36,6 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "lookso_jr_test");
   ros::NodeHandle nh("~");
 
-  lookso_jr_joint_state_pub_ = nh.advertise<std_msgs::Float64>("/lookso_jr/joint1_position/command", 10);
 
   ros::Subscriber lookso_jr_joint_state_sub = nh.subscribe("/joint_states", 10, looksoJointMsgCallback);
 
