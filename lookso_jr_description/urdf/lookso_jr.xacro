@@ -15,7 +15,7 @@
   </link>
 
   <!-- World fixed joint-->
-  <joint name="world_fixed" type="floating">
+  <joint name="world_fixed" type="fixed">
     <origin xyz="0 0 0" rpy="0 0 0"/>
     <parent link="world"/>
     <child link="link1"/>
