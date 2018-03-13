@@ -1,4 +1,3 @@
-
 uint8_t pwm_pin = 3;
 uint32_t freq = 50;
 
@@ -10,18 +9,24 @@ void setup()
 
 void loop()
 {
-  uint32_t res = 8;
+  uint32_t res = 10;
   uint32_t duty = 0;
   uint32_t deg = 0;
 
-  deg = 45;
-  duty = map(deg, 0, 180, 0, 50);
+  deg = 0;
+  duty = map(deg, 0, 180, 52, 102);
 
   drv_pwm_set_duty(pwm_pin, res, duty);
   delay(1000);
 
-  deg = 135;
-  duty = map(deg, 0, 180, 0, 50);
+  deg = 90;
+  duty = map(deg, 0, 180, 52, 102);
+
+  drv_pwm_set_duty(pwm_pin, res, duty);
+  delay(1000);
+
+  deg = 180;
+  duty = map(deg, 0, 180, 52, 102);
 
   drv_pwm_set_duty(pwm_pin, res, duty);
   delay(1000);
