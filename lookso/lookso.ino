@@ -16,18 +16,20 @@ void loop()
   deg = 0;
   duty = map(deg, 0, 180, 52, 102);
 
-  drv_pwm_set_duty(pwm_pin, res, duty);
-  delay(1000);
+  drv_pwm_set_duty(pwm_pin, res, 80);
+  // delay(1000);
 
-  deg = 90;
-  duty = map(deg, 0, 180, 52, 102);
+  // deg = 90;
+  // duty = map(deg, 0, 180, 50, 100);
 
-  drv_pwm_set_duty(pwm_pin, res, duty);
-  delay(1000);
+  // drv_pwm_set_duty(pwm_pin, res, duty);
+  // delay(1000);
 
-  deg = 180;
-  duty = map(deg, 0, 180, 52, 102);
+  // deg = 180;
+  // duty = map(deg, 0, 180, 50, 100);
 
-  drv_pwm_set_duty(pwm_pin, res, duty);
-  delay(1000);
+  // drv_pwm_set_duty(pwm_pin, res, duty);
+  // delay(1000);
 }
+
+// 70
