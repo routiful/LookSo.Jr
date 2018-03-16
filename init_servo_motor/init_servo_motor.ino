@@ -1,4 +1,4 @@
-#define PWM_PIN        3
+#define PWM_PIN        11
 #define PWM_FREQ       50 //hz
 #define PWM_RESOLUTION 10
 

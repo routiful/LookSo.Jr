@@ -1,35 +1,49 @@
-uint8_t pwm_pin = 3;
-uint32_t freq = 50;
+#include "servo.h"
+
+#define JOINT_NUM 5
+#define GRIPPER   1
+
+Servo joint[JOINT_NUM];
+Servo gripper;
 
 void setup()
 {
-  drv_pwm_set_freq(pwm_pin, freq);
-  drv_pwm_setup(pwm_pin);
+  joint[0].begin();
+  joint[1].begin();
+  joint[2].begin();
+  joint[3].begin();
+  joint[4].begin();
+
+  joint[0].attach(3);
+  joint[1].attach(5);
+  joint[2].attach(6);
+  joint[3].attach(9);
+  joint[4].attach(10);
+
+  joint[0].offset(1, 20);
+  joint[1].offset(1, 20);
+  joint[2].offset(1, 20);
+  joint[3].offset(1, 20);
+  joint[4].offset(1, 20);
+
+  gripper.begin();
+  gripper.attach(11);
+  gripper.offset(1, 20);
 }
 
 void loop()
 {
-  uint32_t res = 10;
-  uint32_t duty = 0;
-  uint32_t deg = 0;
+  joint[0].write(0);
+  joint[1].write(0);
+  joint[2].write(0);
+  joint[3].write(0);
+  joint[4].write(0);
 
-  deg = 0;
-  duty = map(deg, 0, 180, 52, 102);
+  gripper.write(10);
 
-  drv_pwm_set_duty(pwm_pin, res, 80);
-  // delay(1000);
+  delay(1000);
 
-  // deg = 90;
-  // duty = map(deg, 0, 180, 50, 100);
+  gripper.write(30);
 
-  // drv_pwm_set_duty(pwm_pin, res, duty);
-  // delay(1000);
-
-  // deg = 180;
-  // duty = map(deg, 0, 180, 50, 100);
-
-  // drv_pwm_set_duty(pwm_pin, res, duty);
-  // delay(1000);
+  delay(1000);
 }
-
-// 70
